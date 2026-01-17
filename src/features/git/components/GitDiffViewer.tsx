@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FileDiff, WorkerPoolContextProvider } from "@pierre/diffs/react";
 import type {
   FileDiffMetadata,
@@ -212,6 +212,7 @@ export function GitDiffViewer({
   error,
   onLineReference,
 }: GitDiffViewerProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedRange, setSelectedRange] = useState<SelectedRange | null>(null);
   const poolOptions = useMemo(() => ({ workerFactory }), []);
   const highlighterOptions = useMemo(
@@ -254,6 +255,35 @@ export function GitDiffViewer({
     }
   }, [diffs, selectedRange]);
 
+  useEffect(() => {
+    if (!selectedPath) {
+      return;
+    }
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+    let target: HTMLElement | null = null;
+    const items = container.querySelectorAll<HTMLElement>("[data-diff-path]");
+    for (const item of items) {
+      if (item.dataset.diffPath === selectedPath) {
+        target = item;
+        break;
+      }
+    }
+    if (!target) {
+      return;
+    }
+    const containerRect = container.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const isVisible =
+      targetRect.top >= containerRect.top &&
+      targetRect.bottom <= containerRect.bottom;
+    if (!isVisible) {
+      target.scrollIntoView({ block: "start" });
+    }
+  }, [selectedPath, parsedDiffs]);
+
   const handleSelectionEnd = useCallback(
     (entry: ParsedDiffEntry, range: SelectedLineRange | null) => {
       if (!range || !entry.lineMaps) {
@@ -292,7 +322,7 @@ export function GitDiffViewer({
       poolOptions={poolOptions}
       highlighterOptions={highlighterOptions}
     >
-      <div className="diff-viewer">
+      <div className="diff-viewer" ref={containerRef}>
         {error && <div className="diff-viewer-empty">{error}</div>}
         {!error && isLoading && diffs.length > 0 && (
           <div className="diff-viewer-loading">Refreshing diff...</div>

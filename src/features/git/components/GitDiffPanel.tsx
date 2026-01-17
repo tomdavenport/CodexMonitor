@@ -277,7 +277,7 @@ export function GitDiffPanel({
             return (
               <div
                 key={file.path}
-                className={`diff-row ${isSelected ? "active" : ""}`}
+                className="diff-row"
                 role="button"
                 tabIndex={0}
                 onClick={() => onSelectFile?.(file.path)}
