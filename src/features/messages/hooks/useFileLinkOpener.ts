@@ -5,6 +5,7 @@ import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { openWorkspaceIn } from "../../../services/tauri";
+import { getRevealLabel } from "../../../utils/platform";
 import { getStoredOpenAppId } from "../../app/utils/openApp";
 import type { OpenAppId } from "../../app/constants";
 
@@ -39,20 +40,6 @@ function stripLineSuffix(path: string) {
   return match ? match[1] : path;
 }
 
-function revealLabel() {
-  const platform =
-    (navigator as Navigator & { userAgentData?: { platform?: string } })
-      .userAgentData?.platform ?? navigator.platform ?? "";
-  const normalized = platform.toLowerCase();
-  if (normalized.includes("mac")) {
-    return "Reveal in Finder";
-  }
-  if (normalized.includes("win")) {
-    return "Show in Explorer";
-  }
-  return "Reveal in File Manager";
-}
-
 export function useFileLinkOpener(workspacePath?: string | null) {
   const openFileLink = useCallback(
     async (rawPath: string) => {
@@ -81,7 +68,7 @@ export function useFileLinkOpener(workspacePath?: string | null) {
       const resolvedPath = resolveFilePath(stripLineSuffix(rawPath), workspacePath);
       const openLabel =
         target.id === "finder"
-          ? revealLabel()
+          ? getRevealLabel()
           : target.appName
             ? `Open in ${target.appName}`
             : "Open Link";
@@ -96,7 +83,7 @@ export function useFileLinkOpener(workspacePath?: string | null) {
           ? []
           : [
               await MenuItem.new({
-                text: revealLabel(),
+                text: getRevealLabel(),
                 action: async () => {
                   await revealItemInDir(resolvedPath);
                 },

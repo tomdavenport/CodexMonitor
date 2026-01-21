@@ -4,6 +4,7 @@ import { Menu, MenuItem } from "@tauri-apps/api/menu";
 import { LogicalPosition } from "@tauri-apps/api/dpi";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
+import { getRevealLabel } from "../../../utils/platform";
 import {
   ChevronsUpDown,
   File,
@@ -271,7 +272,7 @@ export function FileTreePanel({
     const menu = await Menu.new({
       items: [
         await MenuItem.new({
-          text: "Reveal in Finder",
+          text: getRevealLabel(),
           action: async () => {
             await revealItemInDir(resolvePath(relativePath));
           },

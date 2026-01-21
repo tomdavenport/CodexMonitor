@@ -1,0 +1,32 @@
+{
+  "app": {
+    "macOSPrivateApi": true,
+    "windows": [
+      {
+        "title": "CodexMonitor",
+        "width": 1200,
+        "height": 700,
+        "minWidth": 360,
+        "minHeight": 600,
+        "dragDropEnabled": false,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "transparent": true,
+        "devtools": true,
+        "windowEffects": {
+          "effects": [
+            "hudWindow"
+          ],
+          "state": "active",
+          "radius": 16
+        }
+      }
+    ]
+  },
+  "bundle": {
+    "createUpdaterArtifacts": true,
+    "macOS": {
+      "infoPlist": "Info.plist"
+    }
+  }
+}

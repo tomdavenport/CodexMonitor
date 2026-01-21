@@ -1,21 +1,19 @@
 use std::fs;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use serde_json::Value;
 
 #[test]
 fn macos_private_api_feature_matches_config() {
     let manifest_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let config_path = manifest_dir.join("tauri.conf.json");
-    let config_contents = fs::read_to_string(&config_path)
-        .unwrap_or_else(|error| panic!("Failed to read {config_path:?}: {error}"));
-    let config: Value = serde_json::from_str(&config_contents)
-        .unwrap_or_else(|error| panic!("Failed to parse tauri.conf.json: {error}"));
-    let macos_private_api = config
-        .get("app")
-        .and_then(|app| app.get("macOSPrivateApi"))
-        .and_then(|value| value.as_bool())
-        .unwrap_or(false);
+    let config_paths = [
+        manifest_dir.join("tauri.conf.json"),
+        manifest_dir.join("tauri.macos.conf.json"),
+    ];
+    let macos_private_api = config_paths
+        .iter()
+        .filter(|path| path.exists())
+        .any(|path| config_has_macos_private_api(path));
 
     if macos_private_api {
         let cargo_path = manifest_dir.join("Cargo.toml");
@@ -44,4 +42,16 @@ fn macos_private_api_feature_matches_config() {
             "Cargo.toml [dependencies] must enable macos-private-api when app.macOSPrivateApi is true"
         );
     }
+}
+
+fn config_has_macos_private_api(path: &Path) -> bool {
+    let config_contents =
+        fs::read_to_string(path).unwrap_or_else(|error| panic!("Failed to read {path:?}: {error}"));
+    let config: Value = serde_json::from_str(&config_contents)
+        .unwrap_or_else(|error| panic!("Failed to parse {path:?}: {error}"));
+    config
+        .get("app")
+        .and_then(|app| app.get("macOSPrivateApi"))
+        .and_then(|value| value.as_bool())
+        .unwrap_or(false)
 }

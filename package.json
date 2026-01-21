@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "build:appimage": "NO_STRIP=1 tauri build --bundles appimage",
+    "build:appimage": "NO_STRIP=1 tauri build --config src-tauri/tauri.linux.conf.json --bundles appimage",
     "doctor": "sh scripts/doctor.sh",
     "doctor:strict": "sh scripts/doctor.sh --strict",
     "doctor:win": "node scripts/doctor.mjs --strict",
@@ -16,8 +16,10 @@
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "tauri": "tauri",
-    "tauri:dev": "npm run doctor:strict && tauri dev",
-    "tauri:build": "npm run doctor:strict && tauri build",
+    "tauri:dev": "npm run doctor:strict && tauri dev --config src-tauri/tauri.macos.conf.json",
+    "tauri:build": "npm run doctor:strict && tauri build --config src-tauri/tauri.macos.conf.json",
+    "tauri:dev:linux": "npm run doctor:strict && tauri dev --config src-tauri/tauri.linux.conf.json",
+    "tauri:build:linux": "NO_STRIP=1 npm run doctor:strict && NO_STRIP=1 tauri build --config src-tauri/tauri.linux.conf.json",
     "tauri:dev:win": "npm run doctor:win && tauri dev --config src-tauri/tauri.windows.conf.json",
     "tauri:build:win": "npm run doctor:win && tauri build --config src-tauri/tauri.windows.conf.json"
   },

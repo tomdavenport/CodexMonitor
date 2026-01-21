@@ -37,9 +37,10 @@ pub fn run() {
         }
     }
 
-    tauri::Builder::default()
-        .enable_macos_default_menu(false)
-        .menu(|handle| {
+    let mut builder = tauri::Builder::default().enable_macos_default_menu(false);
+
+    if should_use_native_menu() {
+        builder = builder.menu(|handle| {
             let app_name = handle.package_info().name.clone();
             let about_item = MenuItemBuilder::with_id("about", format!("About {app_name}"))
                 .build(handle)?;
@@ -200,7 +201,10 @@ pub fn run() {
                     &help_menu,
                 ],
             )
-        })
+        });
+    }
+
+    builder
         .on_menu_event(|app, event| {
             match event.id().as_ref() {
                 "about" | "help_about" => {
@@ -354,10 +358,25 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+
 fn emit_menu_event<R: tauri::Runtime>(app: &tauri::AppHandle<R>, event: &str) {
     if let Some(window) = app.get_webview_window("main") {
         let _ = window.emit(event, ());
     } else {
         let _ = app.emit(event, ());
+    }
+}
+
+fn should_use_native_menu() -> bool {
+    if cfg!(target_os = "linux") {
+        match std::env::var("CODEXMONITOR_NATIVE_MENU") {
+            Ok(value) => {
+                let normalized = value.to_lowercase();
+                matches!(normalized.as_str(), "1" | "true" | "yes" | "on")
+            }
+            Err(_) => false,
+        }
+    } else {
+        true
     }
 }

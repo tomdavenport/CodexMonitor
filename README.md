@@ -2,7 +2,7 @@
 
 ![CodexMonitor](screenshot.png)
 
-CodexMonitor is a macOS Tauri app for orchestrating multiple Codex agents across local workspaces. It provides a sidebar to manage projects, a home screen for quick actions, and a conversation view backed by the Codex app-server protocol.
+CodexMonitor is a Tauri desktop app (macOS + Linux) for orchestrating multiple Codex agents across local workspaces. It provides a sidebar to manage projects, a home screen for quick actions, and a conversation view backed by the Codex app-server protocol.
 
 ## Features
 
@@ -40,7 +40,7 @@ CodexMonitor is a macOS Tauri app for orchestrating multiple Codex agents across
 - Responsive layouts (desktop/tablet/phone) with tabbed navigation.
 - Sidebar usage and credits meter for account rate limits plus a home usage snapshot.
 - Terminal dock with multiple tabs for background commands (experimental).
-- In-app updates with toast-driven download/install, debug panel copy/clear, sound notifications, and macOS overlay title bar with vibrancy + reduced transparency toggle.
+- In-app updates with toast-driven download/install, debug panel copy/clear, sound notifications, and a macOS overlay title bar with vibrancy + reduced transparency toggle (macOS only).
 
 ## Requirements
 
@@ -69,18 +69,46 @@ npm install
 Run in dev mode:
 
 ```bash
-npm run tauri dev
+npm run tauri:dev
+```
+
+Linux dev build:
+
+```bash
+npm run tauri:dev:linux
 ```
 
 ## Release Build
 
-Build the production Tauri bundle (app + dmg):
+Build the production Tauri bundle (macOS app + dmg):
 
 ```bash
-npm run tauri build
+npm run tauri:build
 ```
 
 The macOS app bundle will be in `src-tauri/target/release/bundle/macos/`.
+
+### Linux (AppImage)
+
+```bash
+npm run tauri:build:linux
+```
+
+The AppImage will be in `src-tauri/target/release/bundle/appimage/`.
+
+### Arch Linux (AUR)
+
+Use `aur/PKGBUILD` as the starting point for an AUR package:
+
+```bash
+cd aur
+makepkg -si
+```
+
+Notes:
+
+- The PKGBUILD expects a `vX.Y.Z` GitHub tag to match `package.json`.
+- `codex` is required at runtime; `gh` is optional for GitHub Issues/PRs.
 
 ### Windows (opt-in)
 

@@ -58,7 +58,21 @@ if (!("requestAnimationFrame" in globalThis)) {
   });
 }
 
-if (!("localStorage" in globalThis)) {
+const hasUsableLocalStorage = () => {
+  if (!("localStorage" in globalThis)) {
+    return false;
+  }
+  const storage = globalThis.localStorage as Storage | undefined;
+  return Boolean(
+    storage &&
+      typeof storage.getItem === "function" &&
+      typeof storage.setItem === "function" &&
+      typeof storage.removeItem === "function" &&
+      typeof storage.clear === "function",
+  );
+};
+
+if (!hasUsableLocalStorage()) {
   const store = new Map<string, string>();
   const localStorage = {
     getItem: (key: string) => (store.has(key) ? store.get(key) ?? null : null),
@@ -76,5 +90,8 @@ if (!("localStorage" in globalThis)) {
       return store.size;
     },
   };
-  Object.defineProperty(globalThis, "localStorage", { value: localStorage });
+  Object.defineProperty(globalThis, "localStorage", {
+    value: localStorage,
+    configurable: true,
+  });
 }

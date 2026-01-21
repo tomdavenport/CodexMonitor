@@ -4,6 +4,7 @@ import { revealItemInDir } from "@tauri-apps/plugin-opener";
 import { openWorkspaceIn } from "../../../services/tauri";
 import type { BranchInfo, WorkspaceInfo } from "../../../types";
 import type { ReactNode } from "react";
+import { getFileManagerLabel, getRevealLabel } from "../../../utils/platform";
 import { OPEN_APP_STORAGE_KEY, type OpenAppId } from "../constants";
 import { getStoredOpenAppId } from "../utils/openApp";
 import cursorIcon from "../../../assets/app-icons/cursor.png";
@@ -101,6 +102,7 @@ export function MainHeader({
       ? resolvedWorktreePath.slice(parentPath.length + 1)
       : resolvedWorktreePath;
   const cdCommand = `cd "${relativeWorktreePath}"`;
+  const fileManagerLabel = getFileManagerLabel();
   const openTargets: OpenTarget[] = [
     {
       id: "vscode",
@@ -134,7 +136,7 @@ export function MainHeader({
     },
     {
       id: "finder",
-      label: "Finder",
+      label: fileManagerLabel,
       icon: finderIcon,
       open: async (path) => revealItemInDir(path),
     },
@@ -356,7 +358,7 @@ export function MainHeader({
                       }}
                       data-tauri-drag-region="false"
                     >
-                      Reveal in Finder
+                      {getRevealLabel()}
                     </button>
                   </div>
                 </div>

@@ -7,6 +7,7 @@
         "height": 700,
         "minWidth": 360,
         "minHeight": 600,
+        "dragDropEnabled": true,
         "titleBarStyle": "Visible",
         "hiddenTitle": false,
         "transparent": false,
@@ -14,5 +15,11 @@
         "windowEffects": null
       }
     ]
+  },
+  "bundle": {
+    "targets": [
+      "appimage"
+    ],
+    "createUpdaterArtifacts": false
   }
 }
