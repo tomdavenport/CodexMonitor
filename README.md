@@ -98,7 +98,14 @@ The AppImage will be in `src-tauri/target/release/bundle/appimage/`.
 
 ### Arch Linux (AUR)
 
-Use `aur/PKGBUILD` as the starting point for an AUR package:
+Rolling package (recommended):
+
+```bash
+cd aur-git
+makepkg -si
+```
+
+Stable package (requires tags):
 
 ```bash
 cd aur
@@ -107,7 +114,7 @@ makepkg -si
 
 Notes:
 
-- The PKGBUILD expects a `vX.Y.Z` GitHub tag to match `package.json`.
+- The stable PKGBUILD expects a `vX.Y.Z` GitHub tag to match `package.json`.
 - `codex` is required at runtime; `gh` is optional for GitHub Issues/PRs.
 
 ### Windows (opt-in)
