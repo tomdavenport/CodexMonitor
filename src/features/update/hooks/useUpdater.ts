@@ -54,6 +54,10 @@ export function useUpdater({ enabled = true, onDebug }: UseUpdaterOptions) {
   }, [clearLatestTimeout]);
 
   const checkForUpdates = useCallback(async (options?: { announceNoUpdate?: boolean }) => {
+    if (!enabled) {
+      await resetToIdle();
+      return;
+    }
     let update: Awaited<ReturnType<typeof check>> | null = null;
     try {
       clearLatestTimeout();
@@ -93,9 +97,13 @@ export function useUpdater({ enabled = true, onDebug }: UseUpdaterOptions) {
         await update?.close();
       }
     }
-  }, [clearLatestTimeout, onDebug]);
+  }, [clearLatestTimeout, enabled, onDebug, resetToIdle]);
 
   const startUpdate = useCallback(async () => {
+    if (!enabled) {
+      await resetToIdle();
+      return;
+    }
     const update = updateRef.current;
     if (!update) {
       await checkForUpdates();
@@ -163,7 +171,7 @@ export function useUpdater({ enabled = true, onDebug }: UseUpdaterOptions) {
         error: message,
       }));
     }
-  }, [checkForUpdates, onDebug]);
+  }, [checkForUpdates, enabled, onDebug, resetToIdle]);
 
   useEffect(() => {
     if (!enabled || import.meta.env.DEV || !isTauri()) {
@@ -171,6 +179,12 @@ export function useUpdater({ enabled = true, onDebug }: UseUpdaterOptions) {
     }
     void checkForUpdates();
   }, [checkForUpdates, enabled]);
+
+  useEffect(() => {
+    if (!enabled) {
+      void resetToIdle();
+    }
+  }, [enabled, resetToIdle]);
 
   useEffect(() => {
     return () => {

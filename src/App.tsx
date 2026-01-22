@@ -97,6 +97,7 @@ import { usePanelVisibility } from "./features/layout/hooks/usePanelVisibility";
 import { useTerminalController } from "./features/terminal/hooks/useTerminalController";
 import { playNotificationSound } from "./utils/notificationSounds";
 import { shouldApplyCommitMessage } from "./utils/commitMessage";
+import { isLinuxPlatform } from "./utils/platform";
 import {
   pickWorkspacePath,
   generateCommitMessage,
@@ -290,12 +291,13 @@ function MainApp() {
 
   const composerInputRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const updaterEnabled = !isLinuxPlatform();
   const {
     state: updaterState,
     startUpdate,
     checkForUpdates,
     dismiss: dismissUpdate,
-  } = useUpdater({ onDebug: addDebugEntry });
+  } = useUpdater({ enabled: updaterEnabled, onDebug: addDebugEntry });
   const isWindowFocused = useWindowFocusState();
   const nextTestSoundIsError = useRef(false);
   const subscribeUpdaterCheckEvent = useCallback(
@@ -314,9 +316,13 @@ function MainApp() {
     [addDebugEntry],
   );
 
-  useTauriEvent(subscribeUpdaterCheckEvent, () => {
-    void checkForUpdates({ announceNoUpdate: true });
-  });
+  useTauriEvent(
+    subscribeUpdaterCheckEvent,
+    () => {
+      void checkForUpdates({ announceNoUpdate: true });
+    },
+    { enabled: updaterEnabled },
+  );
 
   useAgentSoundNotifications({
     enabled: appSettings.notificationSoundsEnabled,

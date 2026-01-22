@@ -8,6 +8,17 @@ function getPlatformLabel() {
   return platform.toLowerCase();
 }
 
+export function isLinuxPlatform() {
+  const normalized = getPlatformLabel();
+  if (normalized) {
+    return normalized.includes("linux");
+  }
+  if (typeof navigator === "undefined") {
+    return false;
+  }
+  return /linux/i.test(navigator.userAgent);
+}
+
 export function getFileManagerLabel() {
   const normalized = getPlatformLabel();
   if (normalized.includes("mac")) {
