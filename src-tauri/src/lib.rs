@@ -5,10 +5,10 @@ mod backend;
 mod codex;
 mod codex_home;
 mod codex_config;
-#[cfg(not(target_os = "windows"))]
+#[cfg(target_os = "macos")]
 #[path = "dictation.rs"]
 mod dictation;
-#[cfg(target_os = "windows")]
+#[cfg(not(target_os = "macos"))]
 #[path = "dictation_stub.rs"]
 mod dictation;
 mod event_sink;

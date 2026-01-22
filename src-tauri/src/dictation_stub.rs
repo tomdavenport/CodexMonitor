@@ -4,7 +4,7 @@ use tauri::{AppHandle, Emitter, State};
 use crate::state::AppState;
 
 const DEFAULT_MODEL_ID: &str = "base";
-const UNSUPPORTED_MESSAGE: &str = "Dictation is not supported on Windows builds.";
+const UNSUPPORTED_MESSAGE: &str = "Dictation is only supported on macOS builds.";
 
 #[derive(Debug, Serialize, Clone, Copy, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
@@ -79,7 +79,7 @@ fn emit_event(app: &AppHandle, event: DictationEvent) {
     let _ = app.emit("dictation-event", event);
 }
 
-fn windows_unsupported_status(model_id: Option<String>) -> DictationModelStatus {
+fn unsupported_status(model_id: Option<String>) -> DictationModelStatus {
     DictationModelStatus {
         state: DictationModelState::Error,
         model_id: model_id.unwrap_or_else(|| DEFAULT_MODEL_ID.to_string()),
@@ -95,7 +95,7 @@ pub(crate) async fn dictation_model_status(
     state: State<'_, AppState>,
     model_id: Option<String>,
 ) -> Result<DictationModelStatus, String> {
-    let status = windows_unsupported_status(model_id);
+    let status = unsupported_status(model_id);
     {
         let mut dictation = state.dictation.lock().await;
         dictation.model_status = status.clone();
@@ -188,4 +188,3 @@ pub(crate) async fn dictation_cancel(
     );
     Ok(DictationSessionState::Idle)
 }
-
